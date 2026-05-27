@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Natural Disaster Classifier</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #f1f5f9;
+      min-height: 100vh;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(15,23,42,0.95);
+      border-bottom: 1px solid #1e293b;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #38bdf8;
+      letter-spacing: 0.5px;
+    }
+
+    nav a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: #38bdf8; }
+
+    /* Hero */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      background: radial-gradient(ellipse at top, #1e3a5f 0%, #0f172a 70%);
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(56,189,248,0.15);
+      border: 1px solid rgba(56,189,248,0.3);
+      color: #38bdf8;
+      padding: 0.4rem 1.2rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1.2rem;
+      background: linear-gradient(135deg, #f1f5f9 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: #94a3b8;
+      max-width: 600px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+      color: white;
+      padding: 0.9rem 2.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 600;
+      display: inline-block;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(14,165,233,0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(14,165,233,0.5);
+    }
+
+    /* Stats bar */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      padding: 2.5rem;
+      background: #1e293b;
+      border-top: 1px solid #334155;
+      border-bottom: 1px solid #334155;
+      flex-wrap: wrap;
+    }
+    .stat { text-align: center; }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #38bdf8;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 0.3rem;
+    }
+
+    /* Disaster cards */
+    .section {
+      padding: 4rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .section-sub {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 3rem;
+      font-size: 0.95rem;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      transition: transform 0.2s, border-color 0.2s;
+      cursor: default;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #38bdf8;
+    }
+    .card-icon { font-size: 2.8rem; margin-bottom: 1rem; }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .card-desc {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    /* How it works */
+    .how {
+      background: #1e293b;
+      padding: 4rem 2rem;
+    }
+    .steps {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .step {
+      flex: 1;
+      min-width: 180px;
+      max-width: 220px;
+      text-align: center;
+    }
+    .step-num {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin: 0 auto 1rem;
+    }
+    .step h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .step p { font-size: 0.82rem; color: #94a3b8; line-height: 1.5; }
+
+    /* CTA */
+    .cta {
+      text-align: center;
+      padding: 5rem 2rem;
+      background: radial-gradient(ellipse at center, #1e3a5f 0%, #0f172a 70%);
+    }
+    .cta h2 { font-size: 2rem; font-weight: 800; margin-bottom: 1rem; }
+    .cta p { color: #94a3b8; margin-bottom: 2rem; font-size: 1rem; }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: #475569;
+      font-size: 0.82rem;
+      border-top: 1px solid #1e293b;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🌍 DisasterAI</div>
+  <a href="/predict">Try It Now →</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">Deep Learning · Computer Vision</div>
+  <h1>Natural Disaster<br/>Intensity Classification</h1>
+  <p>Upload an image and our CNN model instantly identifies the type of natural disaster — Cyclone, Earthquake, Flood, or Wildfire — with confidence scores.</p>
+  <a href="/predict" class="btn-primary">Classify an Image →</a>
+</section>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-value">91%+</div>
+    <div class="stat-label">Training Accuracy</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">4</div>
+    <div class="stat-label">Disaster Classes</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">939</div>
+    <div class="stat-label">Training Images</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value">20</div>
+    <div class="stat-label">Epochs Trained</div>
+  </div>
+</div>
+
+<section class="section">
+  <h2 class="section-title">Disasters We Detect</h2>
+  <p class="section-sub">Our model classifies images into 4 natural disaster categories</p>
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">🌀</div>
+      <div class="card-title">Cyclone</div>
+      <div class="card-desc">Rotating storm systems with powerful winds and heavy rainfall patterns.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏔️</div>
+      <div class="card-title">Earthquake</div>
+      <div class="card-desc">Seismic events causing ground shaking and structural damage detection.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌊</div>
+      <div class="card-title">Flood</div>
+      <div class="card-desc">Water overflow events submerging normally dry land areas.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔥</div>
+      <div class="card-title">Wildfire</div>
+      <div class="card-desc">Uncontrolled fires rapidly spreading through vegetation and forests.</div>
+    </div>
+  </div>
+</section>
+
+<div class="how">
+  <div class="section" style="padding-top:0; padding-bottom:0;">
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-sub">Three simple steps to classify a disaster image</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Upload Image</h3>
+        <p>Select any disaster-related image from your device in PNG, JPG, or JPEG format.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>AI Analysis</h3>
+        <p>Our CNN model processes the image through convolutional layers to extract features.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Get Results</h3>
+        <p>Receive instant classification with confidence scores and safety guidelines.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="cta">
+  <h2>Ready to Classify?</h2>
+  <p>Upload your disaster image and get instant AI-powered results.</p>
+  <a href="/predict" class="btn-primary">Start Now →</a>
+</section>
+
+<footer>
+  Built with TensorFlow · Keras · Flask &nbsp;|&nbsp; Natural Disaster Intensity Analysis Project
+</footer>
+
+</body>
+</html>
