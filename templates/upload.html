@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Classify Disaster | DisasterAI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #f1f5f9;
+      min-height: 100vh;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(15,23,42,0.95);
+      border-bottom: 1px solid #1e293b;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo { font-size: 1.3rem; font-weight: 700; color: #38bdf8; }
+    nav a { color: #94a3b8; text-decoration: none; font-size: 0.95rem; }
+    nav a:hover { color: #38bdf8; }
+
+    .container {
+      max-width: 900px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .page-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #f1f5f9 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .page-sub {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 2.5rem;
+      font-size: 0.95rem;
+    }
+
+    /* Upload zone */
+    .upload-zone {
+      background: #1e293b;
+      border: 2px dashed #334155;
+      border-radius: 16px;
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: #38bdf8;
+      background: rgba(56,189,248,0.05);
+    }
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .upload-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .upload-zone h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .upload-zone p { color: #64748b; font-size: 0.88rem; }
+
+    /* Preview */
+    #preview-section { display: none; margin-top: 2rem; }
+    .preview-wrap {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .preview-img-box {
+      flex: 0 0 220px;
+      background: #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #334155;
+    }
+    .preview-img-box img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+    .preview-info { flex: 1; min-width: 200px; }
+    .preview-filename {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 1rem;
+      word-break: break-all;
+    }
+
+    .btn-predict {
+      background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+      color: white;
+      border: none;
+      padding: 0.85rem 2.2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      width: 100%;
+      box-shadow: 0 4px 20px rgba(14,165,233,0.3);
+    }
+    .btn-predict:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 28px rgba(14,165,233,0.45);
+    }
+    .btn-predict:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-reset {
+      background: transparent;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      padding: 0.7rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-top: 0.75rem;
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+    .btn-reset:hover { border-color: #94a3b8; }
+
+    /* Loader */
+    .loader {
+      display: none;
+      text-align: center;
+      padding: 1.5rem;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid #334155;
+      border-top-color: #38bdf8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Results */
+    #result-section { display: none; margin-top: 2rem; }
+
+    .result-card {
+      background: #1e293b;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #334155;
+    }
+
+    .result-header {
+      padding: 1.8rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+    .result-icon { font-size: 3rem; }
+    .result-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #64748b;
+      margin-bottom: 0.3rem;
+    }
+    .result-name {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+    .result-conf {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-top: 0.2rem;
+    }
+
+    .result-body { padding: 1.5rem 2rem; border-top: 1px solid #334155; }
+
+    .info-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .info-box {
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+    }
+    .info-box-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #64748b;
+      margin-bottom: 0.5rem;
+    }
+    .info-box p { font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; }
+
+    /* Probability bars */
+    .probs-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .prob-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+    .prob-label { width: 90px; font-size: 0.85rem; color: #cbd5e1; }
+    .prob-bar-wrap {
+      flex: 1;
+      background: #0f172a;
+      border-radius: 999px;
+      height: 8px;
+      overflow: hidden;
+    }
+    .prob-bar {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+      transition: width 0.6s ease;
+    }
+    .prob-val { width: 48px; text-align: right; font-size: 0.82rem; color: #64748b; }
+
+    .btn-again {
+      display: block;
+      text-align: center;
+      background: transparent;
+      color: #38bdf8;
+      border: 1px solid #38bdf8;
+      padding: 0.8rem 2rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .btn-again:hover { background: rgba(56,189,248,0.1); }
+
+    .error-box {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 10px;
+      padding: 1rem 1.5rem;
+      color: #fca5a5;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🌍 DisasterAI</div>
+  <a href="/">← Home</a>
+</nav>
+
+<div class="container">
+  <h1 class="page-title">Classify a Disaster Image</h1>
+  <p class="page-sub">Upload an image and the AI model will detect the disaster type instantly</p>
+
+  <!-- Upload Zone -->
+  <div class="upload-zone" id="upload-zone">
+    <input type="file" id="file-input" accept="image/*"/>
+    <div class="upload-icon">📂</div>
+    <h3>Drop an image here or click to browse</h3>
+    <p>Supports PNG, JPG, JPEG, WEBP &nbsp;·&nbsp; Max 16MB</p>
+  </div>
+
+  <!-- Preview + Predict -->
+  <div id="preview-section">
+    <div class="preview-wrap">
+      <div class="preview-img-box">
+        <img id="preview-img" src="" alt="Preview"/>
+      </div>
+      <div class="preview-info">
+        <p class="preview-filename" id="preview-name"></p>
+        <button class="btn-predict" id="predict-btn" onclick="runPrediction()">
+          🔍 Classify Disaster
+        </button>
+        <button class="btn-reset" onclick="resetAll()">✕ Choose different image</button>
+      </div>
+    </div>
+    <div class="loader" id="loader">
+      <div class="spinner"></div>
+      Analyzing image...
+    </div>
+    <div class="error-box" id="error-box"></div>
+  </div>
+
+  <!-- Results -->
+  <div id="result-section">
+    <div class="result-card">
+      <div class="result-header" id="result-header">
+        <div class="result-icon" id="result-icon"></div>
+        <div>
+          <div class="result-label">Detected Disaster</div>
+          <div class="result-name" id="result-name"></div>
+          <div class="result-conf" id="result-conf"></div>
+        </div>
+      </div>
+      <div class="result-body">
+        <div class="info-row">
+          <div class="info-box">
+            <div class="info-box-title">📋 About</div>
+            <p id="result-desc"></p>
+          </div>
+          <div class="info-box">
+            <div class="info-box-title">⚠️ Safety Tip</div>
+            <p id="result-safety"></p>
+          </div>
+        </div>
+        <div class="probs-title">Confidence Breakdown</div>
+        <div id="prob-bars"></div>
+        <button class="btn-again" onclick="resetAll()">🔄 Classify Another Image</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let selectedFile = null;
+
+  const fileInput = document.getElementById('file-input');
+  const uploadZone = document.getElementById('upload-zone');
+
+  fileInput.addEventListener('change', function() {
+    if (this.files && this.files[0]) handleFile(this.files[0]);
+  });
+
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+
+  function handleFile(file) {
+    selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('preview-img').src = e.target.result;
+      document.getElementById('preview-name').textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+      document.getElementById('preview-section').style.display = 'block';
+      document.getElementById('result-section').style.display = 'none';
+      document.getElementById('error-box').style.display = 'none';
+      uploadZone.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function runPrediction() {
+    if (!selectedFile) return;
+
+    document.getElementById('predict-btn').disabled = true;
+    document.getElementById('loader').style.display = 'block';
+    document.getElementById('error-box').style.display = 'none';
+    document.getElementById('result-section').style.display = 'none';
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      const resp = await fetch('/predict', { method: 'POST', body: formData });
+      const data = await resp.json();
+
+      if (data.error) throw new Error(data.error);
+
+      // Fill result
+      document.getElementById('result-icon').textContent = data.icon;
+      document.getElementById('result-name').textContent = data.prediction;
+      document.getElementById('result-name').style.color = data.color;
+      document.getElementById('result-conf').textContent = 'Confidence: ' + data.confidence + '%';
+      document.getElementById('result-desc').textContent = data.description;
+      document.getElementById('result-safety').textContent = data.safety;
+      document.getElementById('result-header').style.borderLeft = '4px solid ' + data.color;
+
+      // Probability bars
+      const barsHtml = Object.entries(data.all_probabilities)
+        .sort((a, b) => b[1] - a[1])
+        .map(([cls, prob]) => `
+          <div class="prob-row">
+            <div class="prob-label">${cls}</div>
+            <div class="prob-bar-wrap">
+              <div class="prob-bar" style="width:${prob}%"></div>
+            </div>
+            <div class="prob-val">${prob}%</div>
+          </div>`).join('');
+      document.getElementById('prob-bars').innerHTML = barsHtml;
+
+      document.getElementById('result-section').style.display = 'block';
+
+    } catch (err) {
+      const errBox = document.getElementById('error-box');
+      errBox.textContent = '❌ ' + (err.message || 'Something went wrong. Please try again.');
+      errBox.style.display = 'block';
+    } finally {
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('predict-btn').disabled = false;
+    }
+  }
+
+  function resetAll() {
+    selectedFile = null;
+    fileInput.value = '';
+    document.getElementById('preview-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('error-box').style.display = 'none';
+    uploadZone.style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
