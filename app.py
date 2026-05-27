@@ -70,6 +70,10 @@ def predict_disaster(img_path):
 def home():
     return render_template('home.html')
 
+@app.route('/intro')
+def intro():
+    return render_template('intro.html')
+
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
     if request.method == 'GET':
