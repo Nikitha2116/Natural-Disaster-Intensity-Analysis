@@ -9,10 +9,18 @@ Natural disasters cause devastating damage to ecosystems, infrastructure, and hu
 ## Disaster Categories
 
 The model classifies images into 4 categories:
-- Cyclone
-- Earthquake
-- Flood
-- Wildfire
+- 🌀 Cyclone
+- 🏔️ Earthquake
+- 🌊 Flood
+- 🔥 Wildfire
+
+## Pre-trained Model Download
+
+> The `disaster.h5` model file (~9.4 MB) is hosted on Google Drive due to GitHub binary file limitations.
+
+**[⬇️ Download disaster.h5 from Google Drive](https://drive.google.com/file/d/172tO9QiJ9W2DvhJUgB5AjNn0MXNVDF9D/view?usp=sharing)**
+
+After downloading, place `disaster.h5` in the same folder as `app.py`.
 
 ## Model Architecture
 
@@ -62,23 +70,12 @@ The model classifies images into 4 categories:
 Natural-Disaster-Intensity-Analysis/
 |-- Model building/
 |   |-- AI based Natural disaster analysis.ipynb   # Training notebook
-|   |-- disaster.h5                                # Pre-trained model
-|-- dataset/
-|   |-- train_set/
-|   |   |-- Cyclone/
-|   |   |-- Earthquake/
-|   |   |-- Flood/
-|   |   |-- Wildfire/
-|   |-- test_set/
-|       |-- Cyclone/
-|       |-- Earthquake/
-|       |-- Flood/
-|       |-- Wildfire/
+|   |-- disaster.h5                                # Pre-trained model (see download link above)
 |-- templates/
 |   |-- home.html
-|   |-- intro.html
 |   |-- upload.html
 |-- app.py                                         # Flask application
+|-- requirements.txt
 |-- README.md
 ```
 
@@ -87,22 +84,26 @@ Natural-Disaster-Intensity-Analysis/
 ### Prerequisites
 
 ```bash
-pip install tensorflow keras opencv-contrib-python flask numpy
+pip install -r requirements.txt
 ```
 
-### Running the Model (Notebook)
+### Step 1 - Download the model
 
-1. Open `Model building/AI based Natural disaster analysis.ipynb` in Jupyter
-2. Update dataset path to your local directory
-3. Run all cells to train or load `disaster.h5` for inference
+Download `disaster.h5` from the link above and place it in the root folder (same level as `app.py`).
 
-### Running the Flask App
+### Step 2 - Run the Flask App
 
 ```bash
 python app.py
 ```
 
 Then open your browser at `http://localhost:5000`
+
+### Running the Notebook (optional - to retrain)
+
+1. Open `Model building/AI based Natural disaster analysis.ipynb` in Jupyter
+2. Update the dataset path to your local directory
+3. Run all cells to retrain the model
 
 ## Data Augmentation
 
@@ -114,6 +115,5 @@ Training images were augmented using Keras `ImageDataGenerator`:
 
 ## Notes
 
-- The pre-trained model file `disaster.h5` (~9.4 MB) is included for direct inference
-- Dataset images are not included in this repo due to size - organize your own images into the folder structure above
 - Model was trained on Python 3.9 with TensorFlow/Keras 2.5.0
+- Dataset images are not included due to size - organize your own images into `dataset/train_set/` and `dataset/test_set/` with subfolders for each class
