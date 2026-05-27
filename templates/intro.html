@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About | DisasterAI</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #f1f5f9;
+      min-height: 100vh;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(15,23,42,0.95);
+      border-bottom: 1px solid #1e293b;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo { font-size: 1.3rem; font-weight: 700; color: #38bdf8; text-decoration: none; }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a { color: #94a3b8; text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: #38bdf8; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 5rem 2rem 3rem;
+      background: radial-gradient(ellipse at top, #1e3a5f 0%, #0f172a 70%);
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(56,189,248,0.15);
+      border: 1px solid rgba(56,189,248,0.3);
+      color: #38bdf8;
+      padding: 0.4rem 1.2rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #f1f5f9 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      color: #94a3b8;
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+
+    /* Sections */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: #f1f5f9;
+    }
+    .section-title span { color: #38bdf8; }
+    .section-divider {
+      width: 48px;
+      height: 3px;
+      background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+    .section-text {
+      color: #94a3b8;
+      line-height: 1.85;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Problem section */
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .problem-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1.2rem 1.5rem;
+    }
+    .problem-card-icon { font-size: 1.8rem; margin-bottom: 0.6rem; }
+    .problem-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .problem-card p { font-size: 0.82rem; color: #64748b; line-height: 1.6; }
+
+    /* Architecture */
+    .arch-section {
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-top: 1.5rem;
+      border: 1px solid #334155;
+    }
+    .arch-layers {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+    .layer-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: #0f172a;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+    .layer-icon { font-size: 1.2rem; width: 32px; text-align: center; }
+    .layer-name { font-size: 0.88rem; font-weight: 600; flex: 1; }
+    .layer-detail { font-size: 0.78rem; color: #64748b; }
+    .layer-params {
+      font-size: 0.78rem;
+      color: #38bdf8;
+      text-align: right;
+      min-width: 80px;
+    }
+    .arch-arrow {
+      text-align: center;
+      color: #334155;
+      font-size: 1rem;
+      margin: 0.1rem 0;
+    }
+
+    /* Training results */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .metric-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 1.2rem;
+      text-align: center;
+    }
+    .metric-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #38bdf8;
+    }
+    .metric-label {
+      font-size: 0.78rem;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 0.3rem;
+    }
+
+    /* Disaster classes */
+    .disaster-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .disaster-card {
+      border-radius: 14px;
+      padding: 1.5rem;
+      border: 1px solid #334155;
+      position: relative;
+      overflow: hidden;
+    }
+    .disaster-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .cyclone::before { background: #3b82f6; }
+    .earthquake::before { background: #f59e0b; }
+    .flood::before { background: #06b6d4; }
+    .wildfire::before { background: #ef4444; }
+    .disaster-card { background: #1e293b; }
+    .disaster-icon { font-size: 2.2rem; margin-bottom: 0.8rem; }
+    .disaster-name { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .disaster-desc { font-size: 0.83rem; color: #94a3b8; line-height: 1.6; margin-bottom: 0.8rem; }
+    .disaster-safety {
+      font-size: 0.78rem;
+      color: #64748b;
+      background: #0f172a;
+      border-radius: 6px;
+      padding: 0.5rem 0.7rem;
+      line-height: 1.5;
+    }
+
+    /* Tech stack */
+    .tech-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.2rem;
+    }
+    .tech-tag {
+      background: rgba(56,189,248,0.1);
+      border: 1px solid rgba(56,189,248,0.25);
+      color: #38bdf8;
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      font-size: 0.83rem;
+      font-weight: 500;
+    }
+
+    /* Flow */
+    .flow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 1.5rem;
+      position: relative;
+    }
+    .flow-step {
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+      position: relative;
+    }
+    .flow-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .flow-num {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .flow-line {
+      width: 2px;
+      flex: 1;
+      min-height: 24px;
+      background: #1e293b;
+      margin: 4px 0;
+    }
+    .flow-content {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+      flex: 1;
+    }
+    .flow-content h4 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .flow-content p { font-size: 0.83rem; color: #94a3b8; line-height: 1.6; }
+
+    /* CTA */
+    .cta {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: radial-gradient(ellipse at center, #1e3a5f 0%, #0f172a 70%);
+    }
+    .cta h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 1rem; }
+    .cta p { color: #94a3b8; margin-bottom: 2rem; }
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+      color: white;
+      padding: 0.9rem 2.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 600;
+      display: inline-block;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(14,165,233,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(14,165,233,0.5); }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: #475569;
+      font-size: 0.82rem;
+      border-top: 1px solid #1e293b;
+    }
+
+    .divider { border: none; border-top: 1px solid #1e293b; margin: 3rem 0; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">🌍 DisasterAI</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/intro" class="active">About</a>
+    <a href="/predict">Classify</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">Project Overview</div>
+  <h1>About This Project</h1>
+  <p>A deep learning system that classifies natural disasters from images using a Convolutional Neural Network trained on real disaster imagery — built with TensorFlow, Keras, and Flask.</p>
+</div>
+
+<div class="container">
+
+  <!-- Problem Statement -->
+  <div class="section-title">The <span>Problem</span></div>
+  <div class="section-divider"></div>
+  <p class="section-text">
+    Natural disasters — cyclones, earthquakes, floods, and wildfires — cause catastrophic damage to ecosystems, infrastructure, and human lives every year. Traditional detection methods rely on manual assessment, which is time-consuming and often delayed. Early and accurate classification of disaster types from visual data can significantly improve emergency response times.
+  </p>
+  <p class="section-text">
+    Many deep learning approaches struggle with complex and imbalanced disaster image structures. This project addresses that challenge by developing a robust CNN model capable of classifying disaster intensity from images in real time.
+  </p>
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="problem-card-icon">⏱️</div>
+      <h4>Slow Detection</h4>
+      <p>Manual identification of disaster types takes hours, delaying critical response efforts.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-card-icon">📊</div>
+      <h4>Imbalanced Data</h4>
+      <p>Disaster image datasets are often imbalanced, making classification harder for ML models.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-card-icon">🌐</div>
+      <h4>Real-time Need</h4>
+      <p>Emergency services need instant classification to prioritize and allocate resources effectively.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-card-icon">🔍</div>
+      <h4>Visual Complexity</h4>
+      <p>Disaster images vary widely in angle, lighting, and scale making pattern recognition difficult.</p>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- Model Architecture -->
+  <div class="section-title">Model <span>Architecture</span></div>
+  <div class="section-divider"></div>
+  <p class="section-text">
+    A Sequential CNN was designed with two convolutional blocks followed by fully connected layers. The model takes 64×64 RGB images as input and outputs a probability distribution across 4 disaster classes.
+  </p>
+  <div class="arch-section">
+    <div class="arch-layers">
+      <div class="layer-row">
+        <div class="layer-icon">🖼️</div>
+        <div class="layer-name">Input</div>
+        <div class="layer-detail">64 × 64 × 3 (RGB Image)</div>
+        <div class="layer-params">—</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="layer-row">
+        <div class="layer-icon">🔲</div>
+        <div class="layer-name">Conv2D</div>
+        <div class="layer-detail">32 filters, 3×3, ReLU → (62, 62, 32)</div>
+        <div class="layer-params">896 params</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="layer-row">
+        <div class="layer-icon">⬇️</div>
+        <div class="layer-name">MaxPooling2D</div>
+        <div class="layer-detail">2×2 → (31, 31, 32)</div>
+        <div class="layer-params">0 params</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="layer-row">
+        <div class="layer-icon">🔲</div>
+        <div class="layer-name">Conv2D</div>
+        <div class="layer-detail">32 filters, 3×3, ReLU → (29, 29, 32)</div>
+        <div class="layer-params">9,248 params</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="layer-row">
+        <div class="layer-icon">⬇️</div>
+        <div class="layer-name">MaxPooling2D</div>
+        <div class="layer-detail">2×2 → (14, 14, 32)</div>
+        <div class="layer-params">0 params</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="layer-row">
+        <div class="layer-icon">📐</div>
+        <div class="layer-name">Flatten</div>
+        <div class="layer-detail">→ 6,272 units</div>
+        <div class="layer-params">0 params</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="layer-row">
+        <div class="layer-icon">🧠</div>
+        <div class="layer-name">Dense</div>
+        <div class="layer-detail">128 units, ReLU</div>
+        <div class="layer-params">802,944 params</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="layer-row">
+        <div class="layer-icon">🎯</div>
+        <div class="layer-name">Dense (Output)</div>
+        <div class="layer-detail">4 units, Softmax</div>
+        <div class="layer-params">516 params</div>
+      </div>
+    </div>
+    <p style="text-align:right; margin-top:1rem; font-size:0.82rem; color:#38bdf8; font-weight:700;">Total: 813,604 parameters</p>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- Training Results -->
+  <div class="section-title">Training <span>Results</span></div>
+  <div class="section-divider"></div>
+  <p class="section-text">
+    The model was trained for 20 epochs using the Adam optimizer with categorical crossentropy loss. Data augmentation was applied to improve generalization.
+  </p>
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-value">91%+</div>
+      <div class="metric-label">Training Accuracy</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">78.7%</div>
+      <div class="metric-label">Best Val Accuracy</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">742</div>
+      <div class="metric-label">Training Images</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">197</div>
+      <div class="metric-label">Test Images</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">20</div>
+      <div class="metric-label">Epochs</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">4</div>
+      <div class="metric-label">Classes</div>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- Disaster Classes -->
+  <div class="section-title">Disaster <span>Classes</span></div>
+  <div class="section-divider"></div>
+  <p class="section-text">The model detects and classifies images into 4 natural disaster categories, each with distinct visual patterns the CNN learns to identify.</p>
+  <div class="disaster-grid">
+    <div class="disaster-card cyclone">
+      <div class="disaster-icon">🌀</div>
+      <div class="disaster-name">Cyclone</div>
+      <div class="disaster-desc">Rotating storm systems characterized by spiral cloud patterns and strong winds, typically forming over warm ocean waters.</div>
+      <div class="disaster-safety">⚠️ Evacuate coastal areas and seek sturdy inland shelter immediately.</div>
+    </div>
+    <div class="disaster-card earthquake">
+      <div class="disaster-icon">🏔️</div>
+      <div class="disaster-name">Earthquake</div>
+      <div class="disaster-desc">Sudden seismic events causing ground shaking and structural collapse, often visible through damaged buildings and debris.</div>
+      <div class="disaster-safety">⚠️ Drop, cover, and hold on. Stay away from windows and heavy objects.</div>
+    </div>
+    <div class="disaster-card flood">
+      <div class="disaster-icon">🌊</div>
+      <div class="disaster-name">Flood</div>
+      <div class="disaster-desc">Overflow of water submerging normally dry land, identifiable by submerged structures and muddy water patterns in imagery.</div>
+      <div class="disaster-safety">⚠️ Move to higher ground immediately. Do not walk through floodwaters.</div>
+    </div>
+    <div class="disaster-card wildfire">
+      <div class="disaster-icon">🔥</div>
+      <div class="disaster-name">Wildfire</div>
+      <div class="disaster-desc">Uncontrolled fires spreading through vegetation, identified by visible flames, dense smoke plumes, and charred terrain.</div>
+      <div class="disaster-safety">⚠️ Evacuate immediately. Close all windows and doors before leaving.</div>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- Project Flow -->
+  <div class="section-title">Project <span>Flow</span></div>
+  <div class="section-divider"></div>
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="flow-left">
+        <div class="flow-num">1</div>
+        <div class="flow-line"></div>
+      </div>
+      <div class="flow-content">
+        <h4>Data Collection & Augmentation</h4>
+        <p>939 images across 4 disaster classes collected. ImageDataGenerator applied rescaling, shear, zoom, and horizontal flip to improve model generalization.</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-left">
+        <div class="flow-num">2</div>
+        <div class="flow-line"></div>
+      </div>
+      <div class="flow-content">
+        <h4>Model Building</h4>
+        <p>Sequential CNN built with Keras — two Conv2D + MaxPooling blocks, a Flatten layer, and Dense output with Softmax activation for multi-class classification.</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-left">
+        <div class="flow-num">3</div>
+        <div class="flow-line"></div>
+      </div>
+      <div class="flow-content">
+        <h4>Training</h4>
+        <p>Model trained for 20 epochs with Adam optimizer and categorical crossentropy loss. Achieved 91%+ training accuracy and ~78.7% validation accuracy.</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-left">
+        <div class="flow-num">4</div>
+        <div class="flow-line"></div>
+      </div>
+      <div class="flow-content">
+        <h4>Model Saved</h4>
+        <p>Trained model saved as <code>disaster.h5</code> for reuse without retraining. Weights and architecture fully preserved.</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-left">
+        <div class="flow-num">5</div>
+        <div class="flow-line"></div>
+      </div>
+      <div class="flow-content">
+        <h4>Flask Web Application</h4>
+        <p>Flask app built to serve predictions via a web interface. Users upload an image, the model predicts the disaster type, and results are displayed with confidence scores and safety tips.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- Tech Stack -->
+  <div class="section-title">Tech <span>Stack</span></div>
+  <div class="section-divider"></div>
+  <p class="section-text">Built using industry-standard deep learning and web development tools.</p>
+  <div class="tech-grid">
+    <span class="tech-tag">Python 3.9</span>
+    <span class="tech-tag">TensorFlow 2.5</span>
+    <span class="tech-tag">Keras</span>
+    <span class="tech-tag">Flask</span>
+    <span class="tech-tag">OpenCV</span>
+    <span class="tech-tag">NumPy</span>
+    <span class="tech-tag">Pillow</span>
+    <span class="tech-tag">ImageDataGenerator</span>
+    <span class="tech-tag">Jupyter Notebook</span>
+    <span class="tech-tag">CNN</span>
+    <span class="tech-tag">Softmax</span>
+    <span class="tech-tag">Adam Optimizer</span>
+  </div>
+
+</div>
+
+<!-- CTA -->
+<div class="cta">
+  <h2>Ready to Try It?</h2>
+  <p>Upload a disaster image and get an instant AI-powered classification.</p>
+  <a href="/predict" class="btn-primary">Classify an Image →</a>
+</div>
+
+<footer>
+  Built with TensorFlow · Keras · Flask &nbsp;|&nbsp; Natural Disaster Intensity Analysis Project
+</footer>
+
+</body>
+</html>
